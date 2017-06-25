@@ -280,6 +280,7 @@ export class MyDatePicker implements OnChanges, ControlValueAccessor {
             this.clearDate();
         }
         else {
+            this.customDateMasking(value);
             let date: IMyDate = this.utilService.isDateValid(value, this.opts.dateFormat, this.opts.minYear, this.opts.maxYear, this.opts.disableUntil, this.opts.disableSince, this.opts.disableWeekends, this.opts.disableDays, this.opts.disableDateRanges, this.opts.monthLabels, this.opts.enableDays);
             if (date.day !== 0 && date.month !== 0 && date.year !== 0) {
                 this.selectDate(date, CalToggle.CloseByDateSel);
@@ -808,5 +809,52 @@ export class MyDatePicker implements OnChanges, ControlValueAccessor {
         this.prevYearDisabled = y - 1 < this.opts.minYear || dpy;
         this.nextMonthDisabled = m === 12 && y === this.opts.maxYear || dnm;
         this.nextYearDisabled = y + 1 > this.opts.maxYear || dny;
+    }
+     customDateMasking(value:string): void{
+
+        let dateFormat: string = 'mm-dd-yyyy';
+        let manualInputLength:number = value.length;
+        let constructedDate:string ='';
+        let dateParts:any;
+
+        if(manualInputLength > 0){
+
+            dateParts = value.split('-');
+            console.log("dateparts on manual entry =>",dateParts);
+            if(parseInt(value[0])>1){
+                constructedDate = "0"+value[0]+"-";
+                console.log("constructed date on manual entry =>",constructedDate);
+                this.selectionDayTxt = constructedDate;
+            }
+            if(parseInt(dateParts[0])<13 && dateParts[0].length==2){
+                constructedDate = manualInputLength>2?dateParts[0]:dateParts[0]+"-";
+                this.selectionDayTxt = constructedDate;
+                console.log("constructed date on manual entry =>",constructedDate);
+            }
+
+            if(dateParts.length==2){
+                 if(parseInt(value[3])>3){
+                    constructedDate = "0"+value[3]+"-";
+                    console.log("constructed date on manual entry iiiii=>",constructedDate);
+                    this.selectionDayTxt = dateParts[0]+"-"+constructedDate;
+                }
+                else{
+                    this.selectionDayTxt = dateParts[0]+"-"+dateParts[1];
+                }
+                if(dateParts[1].length==2){
+                    constructedDate = manualInputLength>5?dateParts[1]:dateParts[1]+"-";
+                    this.selectionDayTxt = dateParts[0]+"-"+constructedDate;
+                    console.log("constructed date on manual entry =>",constructedDate);
+                }
+            }
+            if(dateParts.length==3){
+                 
+                constructedDate =dateParts[2].length>4? dateParts[2].substring(0,4):dateParts[2];
+                this.selectionDayTxt = dateParts[0]+"-"+dateParts[1]+"-"+constructedDate;
+                console.log("constructed date on manual entry year=>",constructedDate);
+                
+            }
+
+        }
     }
 }
